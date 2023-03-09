@@ -561,6 +561,15 @@ class ModelMixin(torch.nn.Module):
                 if device_map is None:
                     param_device = "cpu"
                     state_dict = load_state_dict(model_file, variant=variant)
+
+                    if pretrained_model_name_or_path.split("/")[-1] != 'unet':
+                        state_dict = load_state_dict(model_file, variant=variant)
+                    else:
+                        print("part unet")
+                        state_dict = torch.load("/root/unet_model/unet_0.bin")
+                        unet_1_dict = torch.load("/root/unet_model/unet_1.bin")
+                        state_dict.update(unet_1_dict)
+                    
                     # move the params from meta device to cpu
                     missing_keys = set(model.state_dict().keys()) - set(state_dict.keys())
                     if len(missing_keys) > 0:
